@@ -177,4 +177,10 @@ class TestAccountService(TestCase):
         returned_data = response3.get_json()
         self.assertRaises(ValueError, update_account, 1)
         self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
-       
+
+    def test_account_not_found(self):
+        """ It should check if not founded account is well handled """          
+        response = self.client.get("/accounts/0")
+        accountDB = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+   
