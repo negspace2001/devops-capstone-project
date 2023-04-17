@@ -11,7 +11,7 @@ from unittest import TestCase
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
-from service.routes import app, read_account, update_account
+from service.routes import app, read_account, update_account, delete_account
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -183,4 +183,42 @@ class TestAccountService(TestCase):
         response = self.client.get("/accounts/0")
         accountDB = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-   
+    
+    def test_delete_account(self):
+        """ It should delete an account data from database """
+        """ We firstly create an account in the database """        
+        account = AccountFactory()                
+        response = self.client.post(
+            BASE_URL,
+            json=account.serialize(),
+            content_type="application/json"
+        )
+        savedAccount = response.get_json()        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                
+        """ Then we try to read it back and delete it """        
+        response2 = self.client.delete(
+            BASE_URL + "/" + str(savedAccount["id"]),
+            json=account.serialize(),
+            content_type="application/json"
+        )        
+        self.assertRaises(ValueError, delete_account, savedAccount["id"])        
+        self.assertEqual(response2.status_code, status.HTTP_204_NO_CONTENT)
+    
+    def test_list_all_accounts(self):
+        """ It should get HTTP_200_OK from all accounts as a list or dict """        
+        response = self.client.get("/accounts")
+        accounts = response.get_json()
+        """ Testing for no accounts in database """        
+        self.assertEqual(accounts, [])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self._create_accounts(5)
+        response2 = self.client.get("/accounts")
+        accounts = response2.get_json()
+        """ Testing for 5 accounts added in database and returned in list or dict """        
+        self.assertEqual(len(accounts), 5)
+    
+    def test_method_not_allowed(self):
+        """It should not allow an illegal method call"""
+        response = self.client.delete(BASE_URL)
+        self.assertEqual(response.status_code,status.HTTP_405_METHOD_NOT_ALLOWED)
