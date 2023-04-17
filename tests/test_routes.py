@@ -11,7 +11,7 @@ from unittest import TestCase
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
-from service.routes import app
+from service.routes import app, read_account, update_account
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -145,3 +145,36 @@ class TestAccountService(TestCase):
         """ Now we search for non existent account """        
         response3 = self.client.get("/accounts/100")
         self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_account(self):
+        """ It should update an account already saved in the database """
+        """ We firstly create an account in the database """        
+        account = AccountFactory()                
+        response = self.client.post(
+            BASE_URL,
+            json=account.serialize(),
+            content_type="application/json"
+        )
+        savedAccount = response.get_json()   
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                
+        """ Then we try to update its values """        
+        account.name = "Georges"
+        account.address = "Bonanjo Centre des affaires maritimes IGH BP 1588 Douala"
+        account.email = "nguimbouseffa@yahoo.fr"
+        response2 = self.client.put(
+            BASE_URL+"/" + str(savedAccount["id"]),
+            json=account.serialize(),
+            content_type="application/json"
+        )        
+        accountDB = response2.get_json()
+        self.assertEqual(accountDB["name"], "Georges")        
+        self.assertEqual(accountDB["email"], "nguimbouseffa@yahoo.fr")        
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+
+        """ Now we search for non existent account """        
+        response3 = self.client.get("/accounts/100")
+        returned_data = response3.get_json()
+        self.assertRaises(ValueError, update_account, 1)
+        self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
+       
