@@ -61,8 +61,20 @@ def create_accounts():
 # LIST ALL ACCOUNTS
 ######################################################################
 
-# ... place you code here to LIST accounts ...
-
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """
+    List all accounts
+    This endpoint will search and returns accounts list in the body of response
+    """
+    app.logger.info("Search for all accounts")
+    accounts = Account.all()
+    list_accounts = []
+    for account in accounts:
+        list_accounts.append(account.serialize())
+    return make_response(
+        jsonify(list_accounts), status.HTTP_200_OK
+    )
 
 ######################################################################
 # READ AN ACCOUNT
@@ -121,8 +133,25 @@ def update_account(account_id):
 # DELETE AN ACCOUNT
 ######################################################################
 
-# ... place you code here to DELETE an account ...
+@app.route("/accounts/<account_id>", methods=["DELETE"])
+def delete_account(account_id):
+    """
+    Delete an account with from the database
+    This endpoint will search and removes account data
+    """
+    app.logger.info("Search for an account with given ID")
+    status_code = None
+    return_data = {}
+    account = Account.find(account_id)
+    if type(account) == Account :        
+        account.delete()
+        status_code = status.HTTP_204_NO_CONTENT
+    else:
+        raise ValueError("Account ID " + str(account_id) + " not found")
 
+    return make_response(
+        jsonify(return_data), status_code
+    )
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
