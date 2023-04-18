@@ -18,7 +18,7 @@ spec:
         app: accounts
     spec:
       containers:
-      - image: us.icr.io/sn-labs-nguimbouseff/accounts:1
+      - image: image-registry.openshift-image-registry.svc:5000/$SN_ICR_NAMESPACE/accounts:1 # us.icr.io/sn-labs-nguimbouseff/accounts:1
         name: accounts
         resources: {}
 
