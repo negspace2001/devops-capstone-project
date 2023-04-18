@@ -176,8 +176,8 @@ class TestAccountService(TestCase):
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
 
         # Now we search for non existent account
-        response3 = self.client.get("/accounts/100")
-        # returned_data = response3.get_json()
+        response3 = self.client.get("/accounts/0")
+        returned_data = response3.get_json()
         # self.assertRaises(ValueError, update_account, 1)
         self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
 
