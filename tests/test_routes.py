@@ -198,7 +198,6 @@ class TestAccountService(TestCase):
         )
         savedAccount = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
         # Then we try to read it back and delete it
         response2 = self.client.delete(
             BASE_URL + "/" + str(savedAccount["id"]),
