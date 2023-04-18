@@ -60,7 +60,6 @@ def create_accounts():
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
-
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     """
@@ -79,7 +78,6 @@ def list_accounts():
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<account_id>", methods=["GET"])
 def read_account(account_id):
     """
@@ -95,17 +93,13 @@ def read_account(account_id):
         status_code = status.HTTP_200_OK
     except Exception:
         status_code = status.HTTP_404_NOT_FOUND
-        return_data["error"] = "Account ID " + str(account_id) + " not found"  
-
-    return make_response(
-        jsonify(return_data),status_code
-    )
+        return_data["error"] = "Account ID " + str(account_id) + " not found"
+    return make_response(jsonify(return_data), status_code)
 
 
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<account_id>", methods=["PUT"])
 def update_account(account_id):
     """
@@ -124,15 +118,11 @@ def update_account(account_id):
     else:
         status_code = status.HTTP_404_NOT_FOUND
         raise ValueError("Account ID " + str(account_id) + " not found")
-
-    return make_response(
-        jsonify(return_data),status_code
-    )
+    return make_response(jsonify(return_data), status_code)
 
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<account_id>",methods=["DELETE"])
 def delete_account(account_id):
     """
@@ -148,15 +138,11 @@ def delete_account(account_id):
         status_code = status.HTTP_204_NO_CONTENT
     else:
         raise ValueError("Account ID " + str(account_id) + " not found")
-
-    return make_response(
-        jsonify(return_data),status_code
-    )
+    return make_response(jsonify(return_data), status_code)
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-
 
 def check_content_type(media_type):
     """Checks that the media type is correct"""
