@@ -94,11 +94,11 @@ def read_account(account_id):
         return_data = account.serialize()
         status_code = status.HTTP_200_OK
     except Exception:
-        status_code = status.HTTP_404_NOT_FOUND  
-        return_data["error"] = "Account ID "+str(account_id) +" not found"  
+        status_code = status.HTTP_404_NOT_FOUND
+        return_data["error"] = "Account ID " + str(account_id) + " not found"  
 
     return make_response(
-        jsonify(return_data), status_code
+        jsonify(return_data),status_code
     )
 
 
@@ -116,24 +116,24 @@ def update_account(account_id):
     status_code = None
     return_data = {}
     account = Account.find(account_id)        
-    if type(account) == Account :        
+    if type(account) == Account:
         prepare_data = account.deserialize(request.get_json())
         prepare_data.update()
         status_code = status.HTTP_200_OK
         return_data = account.serialize()
     else:
-        status_code = status.HTTP_404_NOT_FOUND  
-        raise ValueError("Account ID "+str(account_id) +" not found")  
+        status_code = status.HTTP_404_NOT_FOUND
+        raise ValueError("Account ID " + str(account_id) + " not found")
 
     return make_response(
-        jsonify(return_data), status_code
+        jsonify(return_data),status_code
     )
 
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
 
-@app.route("/accounts/<account_id>", methods=["DELETE"])
+@app.route("/accounts/<account_id>",methods=["DELETE"])
 def delete_account(account_id):
     """
     Delete an account with from the database
@@ -143,14 +143,14 @@ def delete_account(account_id):
     status_code = None
     return_data = {}
     account = Account.find(account_id)
-    if type(account) == Account :        
+    if type(account) == Account:
         account.delete()
         status_code = status.HTTP_204_NO_CONTENT
     else:
         raise ValueError("Account ID " + str(account_id) + " not found")
 
     return make_response(
-        jsonify(return_data), status_code
+        jsonify(return_data),status_code
     )
 
 ######################################################################
