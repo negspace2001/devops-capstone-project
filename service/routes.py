@@ -57,10 +57,10 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
-
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     """
@@ -76,10 +76,10 @@ def list_accounts():
         jsonify(list_accounts), status.HTTP_200_OK
     )
 
+
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<account_id>", methods=["GET"])
 def read_account(account_id):
     """
@@ -94,18 +94,14 @@ def read_account(account_id):
         return_data = account.serialize()
         status_code = status.HTTP_200_OK
     except Exception:
-        status_code = status.HTTP_404_NOT_FOUND  
-        return_data["error"] = "Account ID "+str(account_id) +" not found"  
-
-    return make_response(
-        jsonify(return_data), status_code
-    )
+        status_code = status.HTTP_404_NOT_FOUND
+        return_data["error"] = "Account ID " + str(account_id) + " not found"
+    return make_response(jsonify(return_data), status_code)
 
 
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<account_id>", methods=["PUT"])
 def update_account(account_id):
     """
@@ -115,24 +111,21 @@ def update_account(account_id):
     app.logger.info("Search for an account with given ID")
     status_code = None
     return_data = {}
-    account = Account.find(account_id)        
-    if type(account) == Account :        
+    account = Account.find(account_id)
+    if type(account) == Account:
         prepare_data = account.deserialize(request.get_json())
         prepare_data.update()
         status_code = status.HTTP_200_OK
         return_data = account.serialize()
     else:
-        status_code = status.HTTP_404_NOT_FOUND  
-        raise ValueError("Account ID "+str(account_id) +" not found")  
+        status_code = status.HTTP_404_NOT_FOUND
+        # raise ValueError("Account ID " + str(account_id) + " not found")
+    return make_response(jsonify(return_data), status_code)
 
-    return make_response(
-        jsonify(return_data), status_code
-    )
 
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<account_id>", methods=["DELETE"])
 def delete_account(account_id):
     """
@@ -143,15 +136,13 @@ def delete_account(account_id):
     status_code = None
     return_data = {}
     account = Account.find(account_id)
-    if type(account) == Account :        
+    if type(account) == Account:
         account.delete()
         status_code = status.HTTP_204_NO_CONTENT
     else:
         raise ValueError("Account ID " + str(account_id) + " not found")
+    return make_response(jsonify(return_data), status_code)
 
-    return make_response(
-        jsonify(return_data), status_code
-    )
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
