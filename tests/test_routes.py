@@ -11,7 +11,7 @@ from unittest import TestCase
 from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
-from service.routes import app, read_account, update_account, delete_account
+from service.routes import app, delete_account
 from service import talisman
 
 DATABASE_URI = os.getenv(
@@ -130,39 +130,37 @@ class TestAccountService(TestCase):
     # ADD YOUR TEST CASES HERE ...
     def test_read_account(self):
         """ It should get an account data from database """
-        """ We firstly create an account in the database """        
-        account = AccountFactory()                
+        # We firstly create an account in the database
+        account = AccountFactory()
         response = self.client.post(
             BASE_URL,
             json=account.serialize(),
             content_type="application/json"
         )
-        savedAccount = response.get_json()        
+        savedAccount = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-                
-        """ Then we try to read it back and compare values """        
+        # Then we try to read it back and compare values
         response2 = self.client.get("/accounts/" + str(savedAccount["id"]))
         accountDB = response2.get_json()
-        self.assertEqual(account.name, accountDB["name"])        
+        self.assertEqual(account.name, accountDB["name"])
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
 
-        """ Now we search for non existent account """        
+        # Now we search for non existent account
         response3 = self.client.get("/accounts/100")
         self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_account(self):
         """ It should update an account already saved in the database """
-        """ We firstly create an account in the database """        
-        account = AccountFactory()                
+        # We firstly create an account in the database
+        account = AccountFactory()
         response = self.client.post(
             BASE_URL,
             json=account.serialize(),
             content_type="application/json"
         )
-        savedAccount = response.get_json()   
+        savedAccount = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-                
-        """ Then we try to update its values """        
+        # Then we try to update its values
         account.name = "Georges"
         account.address = "Bonanjo Centre des affaires maritimes IGH BP 1588 Douala"
         account.email = "nguimbouseffa@yahoo.fr"
@@ -170,62 +168,63 @@ class TestAccountService(TestCase):
             BASE_URL+"/" + str(savedAccount["id"]),
             json=account.serialize(),
             content_type="application/json"
-        )        
+        )
         accountDB = response2.get_json()
-        self.assertEqual(accountDB["name"], "Georges")        
-        self.assertEqual(accountDB["email"], "nguimbouseffa@yahoo.fr")        
+        self.assertEqual(accountDB["name"], "Georges")
+        self.assertEqual(accountDB["email"], "nguimbouseffa@yahoo.fr")
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
 
-        """ Now we search for non existent account """        
+        # Now we search for non existent account
         response3 = self.client.get("/accounts/100")
         returned_data = response3.get_json()
         # self.assertRaises(ValueError, update_account, 1)
         self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_account_not_found(self):
-        """ It should check if not founded account is well handled """          
+        """ It should check if not founded account is well handled """      
         response = self.client.get("/accounts/0")
         accountDB = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_delete_account(self):
         """ It should delete an account data from database """
-        """ We firstly create an account in the database """        
-        account = AccountFactory()                
+        # We firstly create an account in the database      
+        account = AccountFactory()
         response = self.client.post(
             BASE_URL,
             json=account.serialize(),
             content_type="application/json"
         )
-        savedAccount = response.get_json()        
+        savedAccount = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-                
-        """ Then we try to read it back and delete it """        
+
+        # Then we try to read it back and delete it 
         response2 = self.client.delete(
             BASE_URL + "/" + str(savedAccount["id"]),
             json=account.serialize(),
             content_type="application/json"
-        )        
-        self.assertRaises(ValueError, delete_account, savedAccount["id"])        
+        )
+        self.assertRaises(ValueError, delete_account, savedAccount["id"])
         self.assertEqual(response2.status_code, status.HTTP_204_NO_CONTENT)
-    
+
     def test_list_all_accounts(self):
-        """ It should get HTTP_200_OK from all accounts as a list or dict """        
+        """ It should get HTTP_200_OK from all accounts as a list or dict """
         response = self.client.get("/accounts")
         accounts = response.get_json()
-        """ Testing for no accounts in database """        
+        # Testing for no accounts in database
         self.assertEqual(accounts, [])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self._create_accounts(5)
         response2 = self.client.get("/accounts")
         accounts = response2.get_json()
-        """ Testing for 5 accounts added in database and returned in list or dict """        
+
+        # Testing for 5 accounts added in database and returned in list or dict
         self.assertEqual(len(accounts), 5)
     
     def test_method_not_allowed(self):
         """It should not allow an illegal method call"""
         response = self.client.delete(BASE_URL)
-        self.assertEqual(response.status_code,status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
     
     def test_web_security_headers(self):
         """ Calls the root URL passing in environ_overrides=HTTPS_ENVIRON as param """
@@ -236,7 +235,7 @@ class TestAccountService(TestCase):
         self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
         self.assertEqual(response.headers.get("Content-Security-Policy"), "default-src \'self\'; object-src \'none\'")
         self.assertEqual(response.headers.get("Referrer-Policy"), "strict-origin-when-cross-origin")
-    
+
     def test_web_security_origin(self):
         """ Tests Flask Cors calling the root URL passing in environ_overrides=HTTPS_ENVIRON as param """
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
