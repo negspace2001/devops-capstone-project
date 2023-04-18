@@ -177,19 +177,19 @@ class TestAccountService(TestCase):
 
         # Now we search for non existent account
         response3 = self.client.get("/accounts/100")
-        returned_data = response3.get_json()
+        # returned_data = response3.get_json()
         # self.assertRaises(ValueError, update_account, 1)
         self.assertEqual(response3.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_account_not_found(self):
-        """ It should check if not founded account is well handled """      
+        """ It should check if not founded account is well handled """
         response = self.client.get("/accounts/0")
-        accountDB = response.get_json()
+        # accountDB = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_account(self):
         """ It should delete an account data from database """
-        # We firstly create an account in the database      
+        # We firstly create an account in the database
         account = AccountFactory()
         response = self.client.post(
             BASE_URL,
@@ -199,7 +199,7 @@ class TestAccountService(TestCase):
         savedAccount = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Then we try to read it back and delete it 
+        # Then we try to read it back and delete it
         response2 = self.client.delete(
             BASE_URL + "/" + str(savedAccount["id"]),
             json=account.serialize(),
@@ -221,12 +221,12 @@ class TestAccountService(TestCase):
 
         # Testing for 5 accounts added in database and returned in list or dict
         self.assertEqual(len(accounts), 5)
-    
+
     def test_method_not_allowed(self):
         """It should not allow an illegal method call"""
         response = self.client.delete(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
     def test_web_security_headers(self):
         """ Calls the root URL passing in environ_overrides=HTTPS_ENVIRON as param """
         response = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
