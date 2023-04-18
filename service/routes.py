@@ -57,6 +57,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
@@ -74,6 +75,7 @@ def list_accounts():
     return make_response(
         jsonify(list_accounts), status.HTTP_200_OK
     )
+
 
 ######################################################################
 # READ AN ACCOUNT
@@ -109,7 +111,7 @@ def update_account(account_id):
     app.logger.info("Search for an account with given ID")
     status_code = None
     return_data = {}
-    account = Account.find(account_id)        
+    account = Account.find(account_id)
     if type(account) == Account:
         prepare_data = account.deserialize(request.get_json())
         prepare_data.update()
@@ -117,13 +119,14 @@ def update_account(account_id):
         return_data = account.serialize()
     else:
         status_code = status.HTTP_404_NOT_FOUND
-        raise ValueError("Account ID " + str(account_id) + " not found")
+        #raise ValueError("Account ID " + str(account_id) + " not found")
     return make_response(jsonify(return_data), status_code)
+
 
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-@app.route("/accounts/<account_id>",methods=["DELETE"])
+@app.route("/accounts/<account_id>", methods=["DELETE"])
 def delete_account(account_id):
     """
     Delete an account with from the database
@@ -140,9 +143,11 @@ def delete_account(account_id):
         raise ValueError("Account ID " + str(account_id) + " not found")
     return make_response(jsonify(return_data), status_code)
 
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
+
 
 def check_content_type(media_type):
     """Checks that the media type is correct"""
