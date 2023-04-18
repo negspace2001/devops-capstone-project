@@ -139,6 +139,7 @@ class TestAccountService(TestCase):
         )
         savedAccount = response.get_json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
         # Then we try to read it back and compare values
         response2 = self.client.get("/accounts/" + str(savedAccount["id"]))
         accountDB = response2.get_json()
