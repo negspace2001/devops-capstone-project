@@ -62,7 +62,7 @@ spec:
     - name: args
       description: Arguments to pass to nosetests command
       type: string
-      default: "-v --with-spec --spec-color"
+      default: "-v"
     - name: database_uri
       description: URL for the required test database connection
       type: string
